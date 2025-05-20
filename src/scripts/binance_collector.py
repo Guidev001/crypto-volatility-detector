@@ -3,6 +3,8 @@ import requests
 import pandas as pd
 from datetime import datetime, timezone
 import time
+from ..database.utils import save_klines_dataframe
+from ..database.db_config import SessionLocal
 
 BINANCE_API_BASE_URL = "https://api.binance.com/api/v3"
 
@@ -63,32 +65,33 @@ def klines_to_dataframe(klines_data):
 
     return df
     
-if __name__ == "__main__":
-    symbol_test = "BTCUSDT"
-    # '1m', '5m', '15m', '30m', '1h', '2h', '4h', '1d'
-    interval_test = "1d"
-    number_of_klines_to_test = 1000
+# if __name__ == "__main__":
+#     symbol_test = "BTCUSDT"
+#     # '1m', '5m', '15m', '30m', '1h', '2h', '4h', '1d'
+#     interval_test = "1d"
+#     number_of_klines_to_test = 1000
 
-    print(f"Iniciando coleta dos últimos {number_of_klines_to_test} klines para {symbol_test} ({interval_test}).")
+#     print(f"Iniciando coleta dos últimos {number_of_klines_to_test} klines para {symbol_test} ({interval_test}).")
 
-    raw_data = get_klines(symbol_test, interval_test, limit=number_of_klines_to_test)
+#     raw_data = get_klines(symbol_test, interval_test, limit=number_of_klines_to_test)
 
-    if raw_data:
-        df_klines = klines_to_dataframe(raw_data)
+#     if raw_data:
+#         df_klines = klines_to_dataframe(raw_data)
 
-        if not df_klines.empty:
-            output_dir = "data/raw"
-            os.makedirs(output_dir, exist_ok=True)
+#         if not df_klines.empty:
+#             output_dir = "data/raw"
+#             db_session = SessionLocal()
+#             os.makedirs(output_dir, exist_ok=True)
+#             save_klines_dataframe(db_session, df=df_klines, symbol=symbol_test, interval=interval_test)
+#             timestamp_str = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+#             filename = f"{output_dir}/{symbol_test}_{interval_test}_latest_{len(df_klines)}_{timestamp_str}.csv"
             
-            timestamp_str = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-            filename = f"{output_dir}/{symbol_test}_{interval_test}_latest_{len(df_klines)}_{timestamp_str}.csv"
-            
-            try:
-                df_klines.to_csv(filename, index=False)
-                print(f"\nDados salvos em: {filename}")
-            except Exception as e:
-                print(f"Erro ao salvar o arquivo CSV: {e}")
-        else:
-            print("O DataFrame resultante está vazio após a conversão.")
-    else:
-        print(f"Nenhum dado foi retornado pela API para {symbol_test}.")
+#             try:
+#                 df_klines.to_csv(filename, index=False)
+#                 print(f"\nDados salvos em: {filename}")
+#             except Exception as e:
+#                 print(f"Erro ao salvar o arquivo CSV: {e}")
+#         else:
+#             print("O DataFrame resultante está vazio após a conversão.")
+#     else:
+#         print(f"Nenhum dado foi retornado pela API para {symbol_test}.")
